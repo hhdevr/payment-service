@@ -1,13 +1,16 @@
 package com.iprody.paymentserviceapp.service;
 
+import com.iprody.paymentserviceapp.controller.model.PaymentDto;
 import com.iprody.paymentserviceapp.converter.PaymentConverter;
+import com.iprody.paymentserviceapp.persistence.model.PaymentStatus;
 import com.iprody.paymentserviceapp.persistence.repository.PaymentRepository;
-import com.iprody.paymentserviceapp.rest.model.PaymentDto;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class PaymentServiceImpl implements PaymentService {
@@ -30,9 +33,24 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public Optional<PaymentDto> findById(Long id) {
+    public Optional<PaymentDto> findById(UUID id) {
         return repository.findById(id)
                          .map(converter::convert);
+    }
+
+    @Override
+    public PaymentDto getById(UUID id) {
+        return converter.convert(repository.findById(id)
+                                           .orElseThrow(() -> new EntityNotFoundException(
+                                                   "Payment not found with id " + id)));
+
+    }
+
+    @Override
+    public List<PaymentDto> findByStatus(PaymentStatus status) {
+        return repository.findByStatus(status).stream()
+                         .map(converter::convert)
+                         .toList();
     }
 }
 

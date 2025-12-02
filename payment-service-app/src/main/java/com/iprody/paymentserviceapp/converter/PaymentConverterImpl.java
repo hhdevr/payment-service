@@ -1,7 +1,7 @@
 package com.iprody.paymentserviceapp.converter;
 
+import com.iprody.paymentserviceapp.controller.model.PaymentDto;
 import com.iprody.paymentserviceapp.persistence.model.Payment;
-import com.iprody.paymentserviceapp.rest.model.PaymentDto;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -22,12 +22,15 @@ public class PaymentConverterImpl implements PaymentConverter {
         }
 
         return new PaymentDto(
-                payment.getId(),
+                payment.getGuid(),
+                payment.getInquiryRefId(),
                 payment.getAmount(),
-                payment.getDescription(),
-                toLocalDateTime(payment.getCreatedAt()),
-                toLocalDateTime(payment.getUpdatedAt())
-        );
+                payment.getCurrency(),
+                payment.getTransactionRefId(),
+                payment.getStatus(),
+                payment.getNote(),
+                payment.getCreatedAt(),
+                payment.getUpdatedAt());
     }
 
     @Override
