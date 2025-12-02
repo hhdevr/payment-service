@@ -2,18 +2,19 @@ package com.iprody.paymentserviceapp.persistence.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
-import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.Objects;
+import java.util.UUID;
 
+import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Getter
@@ -24,21 +25,33 @@ public class Payment {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
-    private Long id;
+    @Column(nullable = false, unique = true)
+    private UUID guid;
 
-    @Column(precision = 19, scale = 2, nullable = false)
+    @Column(nullable = false, name = "inquiry_ref_id")
+    private UUID inquiryRefId;
+
+    @Column(nullable = false, precision = 5, scale = 2)
     private BigDecimal amount;
 
-    @Column(length = 500)
-    private String description;
+    @Column(nullable = false, length = 3)
+    private String currency;
 
-    @CreationTimestamp
-    @Column(nullable = false)
-    private Instant createdAt;
+    @Column(name = "transaction_ref_id")
+    private UUID transactionRefId;
 
+    @Enumerated(STRING)
     @Column(nullable = false)
-    @UpdateTimestamp
-    private Instant updatedAt;
+    private PaymentStatus status;
+
+    @Column(columnDefinition = "text")
+    private String note;
+
+    @Column(name = "created_at", nullable = false)
+    private OffsetDateTime createdAt;
+
+    @Column(name = "updated_at", nullable = false)
+    private OffsetDateTime updatedAt;
 
     @Override
     public boolean equals(Object o) {
@@ -46,20 +59,24 @@ public class Payment {
             return false;
         }
         Payment payment = (Payment) o;
-        return Objects.equals(id, payment.id);
+        return Objects.equals(guid, payment.guid);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return Objects.hashCode(guid);
     }
 
     @Override
     public String toString() {
         return "Payment{" +
-               "id=" + id +
+               "guid=" + guid +
+               ", inquiryRefId=" + inquiryRefId +
                ", amount=" + amount +
-               ", description='" + description + '\'' +
+               ", currency='" + currency + '\'' +
+               ", transactionRefId=" + transactionRefId +
+               ", status=" + status +
+               ", note='" + note + '\'' +
                ", createdAt=" + createdAt +
                ", updatedAt=" + updatedAt +
                '}';
