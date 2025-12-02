@@ -22,12 +22,15 @@ public class PaymentConverterImpl implements PaymentConverter {
         }
 
         return new PaymentDto(
-                payment.getId(),
+                payment.getGuid(),
+                payment.getInquiryRefId(),
                 payment.getAmount(),
-                payment.getDescription(),
-                toLocalDateTime(payment.getCreatedAt()),
-                toLocalDateTime(payment.getUpdatedAt())
-        );
+                payment.getCurrency(),
+                payment.getTransactionRefId(),
+                payment.getStatus(),
+                payment.getNote(),
+                payment.getCreatedAt(),
+                payment.getUpdatedAt());
     }
 
     @Override
