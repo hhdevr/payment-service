@@ -27,7 +27,8 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public List<PaymentDto> findAll() {
-        return repository.findAll().stream()
+        return repository.findAll()
+                         .stream()
                          .map(converter::convert)
                          .toList();
     }
