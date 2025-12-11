@@ -1,10 +1,10 @@
 package com.iprody.paymentserviceapp.service;
 
+import com.iprody.paymentserviceapp.controller.model.PaymentDto;
 import com.iprody.paymentserviceapp.converter.PaymentConverter;
 import com.iprody.paymentserviceapp.converter.PaymentConverterImpl;
 import com.iprody.paymentserviceapp.persistence.model.Payment;
 import com.iprody.paymentserviceapp.persistence.repository.PaymentRepository;
-import com.iprody.paymentserviceapp.rest.model.PaymentDto;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -74,7 +75,7 @@ class PaymentServiceImplTest {
     void findById_ReturnsPaymentDto_WhenFound() {
         // given
         Payment payment = create(Payment.class);
-        Long id = payment.getId();
+        UUID id = payment.getGuid();
 
         when(paymentRepository.findById(id)).thenReturn(Optional.of(payment));
 
@@ -83,9 +84,9 @@ class PaymentServiceImplTest {
 
         // then
         assertThat(result).isPresent();
-        assertThat(result.get().id()).isEqualTo(id);
+        assertThat(result.get().guid()).isEqualTo(id);
         assertThat(result.get().amount()).isEqualTo(payment.getAmount());
-        assertThat(result.get().description()).isEqualTo(payment.getDescription());
+        assertThat(result.get().note()).isEqualTo(payment.getNote());
         assertThat(result.get().createdAt()).isNotNull();
         assertThat(result.get().updatedAt()).isNotNull();
         verify(paymentRepository, times(1)).findById(id);
@@ -95,7 +96,7 @@ class PaymentServiceImplTest {
     @DisplayName("findById() should return Optional.empty() when not found")
     void findById_ReturnsEmpty_WhenNotFound() {
         // given
-        Long id = 42L;
+        UUID id = UUID.randomUUID();
         when(paymentRepository.findById(id)).thenReturn(Optional.empty());
 
         // when
