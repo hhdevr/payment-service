@@ -1,5 +1,6 @@
 package com.iprody.paymentserviceapp.persistence.model;
 
+import com.querydsl.core.annotations.QueryEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
@@ -21,6 +22,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Setter
 @Entity
 @Table(name = "payment")
+@QueryEntity
 public class Payment {
 
     @Id

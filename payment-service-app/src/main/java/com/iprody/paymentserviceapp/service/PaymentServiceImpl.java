@@ -4,6 +4,7 @@ import com.iprody.paymentserviceapp.controller.model.PaymentDto;
 import com.iprody.paymentserviceapp.converter.PaymentConverter;
 import com.iprody.paymentserviceapp.persistence.PaymentFilter;
 import com.iprody.paymentserviceapp.persistence.PaymentFilterFactory;
+import com.iprody.paymentserviceapp.persistence.QPaymentFilter;
 import com.iprody.paymentserviceapp.persistence.model.Payment;
 import com.iprody.paymentserviceapp.persistence.model.PaymentStatus;
 import com.iprody.paymentserviceapp.persistence.repository.PaymentRepository;
@@ -68,5 +69,10 @@ public class PaymentServiceImpl implements PaymentService {
     public Page<PaymentDto> searchPaged(PaymentFilter filter, Pageable pageable) {
         Specification<Payment> spec = PaymentFilterFactory.fromFilter(filter);
         return converter.convert(repository.findAll(spec, pageable));
+    }
+
+    public Page<PaymentDto> searchQPaged(QPaymentFilter filter) {
+        return converter.convert(repository.findAll(filter.createPredicate(),
+                                                    filter.createPageable()));
     }
 }

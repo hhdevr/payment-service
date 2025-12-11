@@ -2,6 +2,7 @@ package com.iprody.paymentserviceapp.controller;
 
 import com.iprody.paymentserviceapp.controller.model.PaymentDto;
 import com.iprody.paymentserviceapp.persistence.PaymentFilter;
+import com.iprody.paymentserviceapp.persistence.QPaymentFilter;
 import com.iprody.paymentserviceapp.persistence.model.PaymentStatus;
 import com.iprody.paymentserviceapp.service.PaymentService;
 import lombok.AllArgsConstructor;
@@ -49,12 +50,11 @@ public class PaymentController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Page<PaymentDto>> searchPayments(
-            @ModelAttribute PaymentFilter filter,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
-            @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "desc") String direction) {
+    public ResponseEntity<Page<PaymentDto>> searchPayments(@ModelAttribute PaymentFilter filter,
+                                                           @RequestParam(defaultValue = "0") int page,
+                                                           @RequestParam(defaultValue = "20") int size,
+                                                           @RequestParam(defaultValue = "createdAt") String sortBy,
+                                                           @RequestParam(defaultValue = "desc") String direction) {
 
         Sort sort = unsorted();
         if (StringUtils.hasText(sortBy)) {
@@ -65,5 +65,10 @@ public class PaymentController {
 
         Pageable pageable = PageRequest.of(page, size, sort);
         return ok(service.searchPaged(filter, pageable));
+    }
+
+    @GetMapping("/search-q")
+    public ResponseEntity<Page<PaymentDto>> searchPayments(@ModelAttribute QPaymentFilter filter) {
+        return ok(service.searchQPaged(filter));
     }
 }
