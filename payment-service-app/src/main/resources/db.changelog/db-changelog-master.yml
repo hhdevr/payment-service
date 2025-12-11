@@ -1,0 +1,37 @@
+databaseChangeLog:
+  - changeSet:
+      id: version-0.0
+      author: Dmitry Chaykin
+      context: init
+      comment: "Create DB structure and payment table"
+      changes:
+        - tagDatabase:
+            tag: v0.0
+  - include:
+      file: v1_0/20251208-1.0-create-payment.yml
+      relativeToChangelogFile: true
+
+  - changeSet:
+      id: version-1.0
+      author: Dmitry Chaykin
+      comment: "Creation test`s payment entities"
+      changes:
+        - tagDatabase:
+            tag: v1.0
+  - include:
+      file: v1_1/20251208-1.1-add-test-payments.yml
+      relativeToChangelogFile: true
+  - include:
+      file: v1_1/20251208-1.2-add-test-payments-sql.yml
+      relativeToChangelogFile: true
+  - include:
+      file: v1_1/20251208-1.3-add-test-payments-sql-file.yml
+      relativeToChangelogFile: true
+
+  - changeSet:
+      id: checkpoint-1.1
+      author: Dmitry Chaykin
+      comment: "Mark completion of v1.1 migrations"
+      changes:
+        - tagDatabase:
+            tag: v1.1

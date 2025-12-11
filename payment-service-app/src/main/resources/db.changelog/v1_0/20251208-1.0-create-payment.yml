@@ -1,0 +1,57 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-payment-table
+      author: Dmitry Chaykin
+      changes:
+        - createTable:
+            tableName: payment
+            columns:
+              - column:
+                  name: guid
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: inquiry_ref_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: amount
+                  type: numeric(5,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: currency
+                  type: varchar(3)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: transaction_ref_id
+                  type: uuid
+              - column:
+                  name: status
+                  type: varchar(10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: note
+                  type: text
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+        - sql:
+            sql: ALTER TABLE payment
+              ADD CONSTRAINT check_payment_status
+              CHECK (status IN ('RECEIVED', 'PENDING', 'DECLINED', 'APPROVED', 'NOT_SENT'));
+      rollback:
+        - dropTable:
+            tableName: payment

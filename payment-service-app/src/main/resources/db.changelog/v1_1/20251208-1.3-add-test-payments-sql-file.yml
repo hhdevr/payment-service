@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1.3-insert-demo-payments-sql-file
+      author: Dmitry Chaykin
+      changes:
+        - sqlFile:
+            path: db.changelog/sql/data.sql
+            relativeToChangelogFile: false
+      rollback:
+        - delete:
+            tableName: payment
+            where: note = 'Test payment 4 - sql file generated'
