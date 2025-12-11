@@ -2,10 +2,17 @@ package com.iprody.paymentserviceapp.service;
 
 import com.iprody.paymentserviceapp.controller.model.PaymentDto;
 import com.iprody.paymentserviceapp.converter.PaymentConverter;
+import com.iprody.paymentserviceapp.persistence.PaymentFilter;
+import com.iprody.paymentserviceapp.persistence.PaymentFilterFactory;
+import com.iprody.paymentserviceapp.persistence.QPaymentFilter;
+import com.iprody.paymentserviceapp.persistence.model.Payment;
 import com.iprody.paymentserviceapp.persistence.model.PaymentStatus;
 import com.iprody.paymentserviceapp.persistence.repository.PaymentRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -53,5 +60,19 @@ public class PaymentServiceImpl implements PaymentService {
                          .map(converter::convert)
                          .toList();
     }
-}
 
+    public List<PaymentDto> search(PaymentFilter filter) {
+        Specification<Payment> spec = PaymentFilterFactory.fromFilter(filter);
+        return converter.convert(repository.findAll(spec));
+    }
+
+    public Page<PaymentDto> searchPaged(PaymentFilter filter, Pageable pageable) {
+        Specification<Payment> spec = PaymentFilterFactory.fromFilter(filter);
+        return converter.convert(repository.findAll(spec, pageable));
+    }
+
+    public Page<PaymentDto> searchQPaged(QPaymentFilter filter) {
+        return converter.convert(repository.findAll(filter.createPredicate(),
+                                                    filter.createPageable()));
+    }
+}
