@@ -68,11 +68,13 @@ public class PaymentServiceImpl implements PaymentService {
 
     public Page<PaymentDto> searchPaged(PaymentFilter filter, Pageable pageable) {
         Specification<Payment> spec = PaymentFilterFactory.fromFilter(filter);
-        return converter.convert(repository.findAll(spec, pageable));
+        Page<Payment> page = repository.findAll(spec, pageable);
+        return page.map(converter::convert);
     }
 
     public Page<PaymentDto> searchQPaged(QPaymentFilter filter) {
-        return converter.convert(repository.findAll(filter.createPredicate(),
-                                                    filter.createPageable()));
+        Page<Payment> page = repository.findAll(filter.createPredicate(),
+                                                filter.createPageable());
+        return page.map(converter::convert);
     }
 }
