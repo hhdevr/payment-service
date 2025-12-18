@@ -2,11 +2,10 @@ package com.iprody.paymentserviceapp.converter;
 
 import com.iprody.paymentserviceapp.controller.model.PaymentDto;
 import com.iprody.paymentserviceapp.persistence.model.Payment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Component;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.List;
 
 import static java.util.Collections.emptyList;
@@ -44,7 +43,10 @@ public class PaymentConverterImpl implements PaymentConverter {
                        .toList();
     }
 
-    private LocalDateTime toLocalDateTime(Instant instant) {
-        return instant == null ? null : LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
+    public Page<PaymentDto> convert(Page<Payment> payments) {
+        List<PaymentDto> dtos = payments.get()
+                                        .map(this::convert)
+                                        .toList();
+        return new PageImpl<>(dtos, payments.getPageable(), payments.getTotalElements());
     }
 }
