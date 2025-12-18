@@ -92,7 +92,7 @@ class PaymentConverterImplTest {
         List<PaymentDto> result = converter.convert((List<Payment>) null);
 
         // then
-        assertThat(result).isEmpty();
+        assertThat(result).isNull();
     }
 
     @Test
