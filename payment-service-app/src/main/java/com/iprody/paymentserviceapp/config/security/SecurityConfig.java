@@ -6,15 +6,21 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.core.OAuth2TokenValidator;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
+
+import static org.springframework.security.oauth2.jwt.JwtValidators.createDefaultWithIssuer;
 
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) {
         JwtAuthenticationConverter jwtConverter = new JwtAuthenticationConverter();
         jwtConverter.setJwtGrantedAuthoritiesConverter(new KeycloakRealmRoleConverter());
 
@@ -29,8 +35,21 @@ public class SecurityConfig {
             )
             .oauth2ResourceServer(oauth2 ->
                                           oauth2.jwt(jwt ->
-                                                             jwt.jwtAuthenticationConverter(jwtConverter))
+                                                             jwt.decoder(jwtDecoder())
+                                                                .jwtAuthenticationConverter(jwtConverter))
             );
         return http.build();
+    }
+
+    @Bean
+    public JwtDecoder jwtDecoder() {
+        NimbusJwtDecoder decoder = NimbusJwtDecoder
+                .withJwkSetUri("http://keycloak:8080/realms/iprody-lms/protocol/openid-connect/certs")
+                .build();
+
+        OAuth2TokenValidator<Jwt> withIssuer = createDefaultWithIssuer("http://localhost:8085/realms/iprody-lms");
+        decoder.setJwtValidator(withIssuer);
+
+        return decoder;
     }
 }
