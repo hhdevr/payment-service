@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,32 +40,38 @@ public class PaymentController {
     private final PaymentService service;
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('user', 'reader')")
     public ResponseEntity<List<PaymentDto>> findAll() {
         return ok(service.findAll());
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('user', 'reader')")
     public ResponseEntity<PaymentDto> getById(@PathVariable UUID id) {
         return ok(service.getById(id));
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('user')")
     public ResponseEntity<PaymentDto> create(@RequestBody PaymentDto dto) {
         return ResponseEntity.ok().body(service.create(dto));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('user')")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('user')")
     public ResponseEntity<PaymentDto> update(@RequestBody PaymentDto dto) {
         return ResponseEntity.ok().body(service.update(dto));
     }
 
     @PatchMapping("/{id}")
+    @PreAuthorize("hasRole('user')")
     public ResponseEntity<Boolean> update(@PathVariable UUID id, @RequestParam String note) {
         return ResponseEntity.ok().body(service.updateNote(id, note));
     }
