@@ -3,7 +3,6 @@ package com.iprody.paymentserviceapp.service;
 import com.iprody.paymentserviceapp.controller.model.PaymentDto;
 import com.iprody.paymentserviceapp.persistence.PaymentFilter;
 import com.iprody.paymentserviceapp.persistence.QPaymentFilter;
-import com.iprody.paymentserviceapp.persistence.model.PaymentStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -19,7 +18,13 @@ public interface PaymentService {
 
     PaymentDto getById(UUID id);
 
-    List<PaymentDto> findByStatus(PaymentStatus status);
+    PaymentDto create(PaymentDto dto);
+
+    PaymentDto update(PaymentDto dto);
+
+    void delete(UUID id);
+
+    boolean updateNote(UUID id, String note);
 
     List<PaymentDto> search(PaymentFilter filter);
 

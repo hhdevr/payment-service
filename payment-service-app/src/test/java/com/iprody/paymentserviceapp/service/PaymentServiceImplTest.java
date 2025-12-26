@@ -3,6 +3,7 @@ package com.iprody.paymentserviceapp.service;
 import com.iprody.paymentserviceapp.controller.model.PaymentDto;
 import com.iprody.paymentserviceapp.converter.PaymentConverter;
 import com.iprody.paymentserviceapp.converter.PaymentConverterImpl;
+import com.iprody.paymentserviceapp.exception.ServiceException;
 import com.iprody.paymentserviceapp.persistence.model.Payment;
 import com.iprody.paymentserviceapp.persistence.repository.PaymentRepository;
 import org.instancio.Instancio;
@@ -19,7 +20,10 @@ import java.util.UUID;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.instancio.Instancio.create;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -106,4 +110,120 @@ class PaymentServiceImplTest {
         assertThat(result).isEmpty();
         verify(paymentRepository, times(1)).findById(id);
     }
+
+    @Test
+    @DisplayName("create() should save and return new PaymentDto")
+    void create_SavesAndReturnsPaymentDto() {
+        // given
+        PaymentDto dto = create(PaymentDto.class);
+        Payment entity = new PaymentConverterImpl().convert(dto);
+
+        when(paymentRepository.save(entity)).thenReturn(entity);
+
+        // when
+        PaymentDto result = paymentService.create(dto);
+
+        // then
+        assertThat(result).isNotNull();
+        assertThat(result.guid()).isEqualTo(dto.guid());
+        verify(paymentRepository, times(1)).save(entity);
+    }
+
+    @Test
+    @DisplayName("update() should update existing PaymentDto")
+    void update_UpdatesExistingPayment() {
+        // given
+        PaymentDto dto = create(PaymentDto.class);
+        Payment entity = new PaymentConverterImpl().convert(dto);
+
+        when(paymentRepository.existsById(dto.guid())).thenReturn(true);
+        when(paymentRepository.save(entity)).thenReturn(entity);
+
+        // when
+        PaymentDto result = paymentService.update(dto);
+
+        // then
+        assertThat(result).isNotNull();
+        assertThat(result.guid()).isEqualTo(dto.guid());
+        verify(paymentRepository, times(1)).existsById(dto.guid());
+        verify(paymentRepository, times(1)).save(entity);
+    }
+
+    @Test
+    @DisplayName("update() should throw ServiceException when payment not exists")
+    void update_ThrowsException_WhenNotExists() {
+        // given
+        PaymentDto dto = create(PaymentDto.class);
+        when(paymentRepository.existsById(dto.guid())).thenReturn(false);
+
+        // when & then
+        assertThatThrownBy(() -> paymentService.update(dto))
+                .isInstanceOf(ServiceException.class)
+                .hasMessageContaining("Payment id=" + dto.guid() + " does not exist");
+        verify(paymentRepository, times(1)).existsById(dto.guid());
+        verify(paymentRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("delete() should delete existing payment")
+    void delete_DeletesExistingPayment() {
+        // given
+        UUID id = UUID.randomUUID();
+        when(paymentRepository.existsById(id)).thenReturn(true);
+
+        // when
+        paymentService.delete(id);
+
+        // then
+        verify(paymentRepository, times(1)).existsById(id);
+        verify(paymentRepository, times(1)).deleteById(id);
+    }
+
+    @Test
+    @DisplayName("delete() should throw ServiceException when payment not exists")
+    void delete_ThrowsException_WhenNotExists() {
+        // given
+        UUID id = UUID.randomUUID();
+        when(paymentRepository.existsById(id)).thenReturn(false);
+
+        // when & then
+        assertThatThrownBy(() -> paymentService.delete(id))
+                .isInstanceOf(ServiceException.class)
+                .hasMessageContaining("Payment id=" + id + " does not exist");
+        verify(paymentRepository, times(1)).existsById(id);
+        verify(paymentRepository, never()).deleteById(id);
+    }
+
+    @Test
+    @DisplayName("updateNote() should return true when note updated successfully")
+    void updateNote_ReturnsTrue_WhenUpdated() {
+        // given
+        UUID id = UUID.randomUUID();
+        String note = "new note";
+//        when(paymentRepository.existsById(id)).thenReturn(true);
+        when(paymentRepository.updateNote(id, note)).thenReturn(1);
+
+        // when
+        boolean result = paymentService.updateNote(id, note);
+
+        // then
+        assertThat(result).isTrue();
+        verify(paymentRepository, times(1)).updateNote(id, note);
+    }
+
+    @Test
+    @DisplayName("updateNote() should throw ServiceException when payment not exists")
+    void updateNote_ThrowsException_WhenNotExists() {
+        // given
+        UUID id = UUID.randomUUID();
+        String note = "new note";
+        when(paymentRepository.updateNote(id, note)).thenReturn(0);
+
+        // when & then
+        assertThatThrownBy(() -> paymentService.updateNote(id, note))
+                .isInstanceOf(ServiceException.class)
+                .hasMessageContaining("Payment id=" + id + " does not exist");
+        verify(paymentRepository, times(1)).updateNote(id, note);
+    }
+
 }
