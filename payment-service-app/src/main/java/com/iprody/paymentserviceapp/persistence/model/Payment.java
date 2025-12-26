@@ -5,6 +5,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -16,7 +17,6 @@ import java.util.Objects;
 import java.util.UUID;
 
 import static jakarta.persistence.EnumType.STRING;
-import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Getter
 @Setter
@@ -26,8 +26,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 public class Payment {
 
     @Id
-    @GeneratedValue(strategy = IDENTITY)
-    @Column(nullable = false, unique = true)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID guid;
 
     @Column(nullable = false, name = "inquiry_ref_id")
