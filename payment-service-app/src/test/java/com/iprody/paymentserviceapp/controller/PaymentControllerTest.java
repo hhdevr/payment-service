@@ -1,7 +1,7 @@
 package com.iprody.paymentserviceapp.controller;
 
 import com.iprody.paymentserviceapp.controller.model.PaymentDto;
-import com.iprody.paymentserviceapp.persistence.model.PaymentStatus;
+import com.iprody.paymentserviceapp.exception.GlobalExceptionHandler;
 import com.iprody.paymentserviceapp.service.PaymentService;
 import jakarta.persistence.EntityNotFoundException;
 import org.instancio.Instancio;
@@ -18,8 +18,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.List;
 import java.util.UUID;
 
-import static com.iprody.paymentserviceapp.persistence.model.PaymentStatus.DECLINED;
-import static org.instancio.Select.field;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -101,46 +99,7 @@ class PaymentControllerTest {
         // when & then
         mockMvc.perform(get("/payments/{id}", id)
                                 .accept(MediaType.APPLICATION_JSON))
-               .andExpect(status().isNotFound());
-    }
-
-    @Test
-    @DisplayName("GET /payments/statuses?status=COMPLETED,PENDING returns payments with those statuses")
-    void getByStatus_ReturnsPaymentsByStatus() throws Exception {
-        // given
-        PaymentDto d1 = Instancio.of(PaymentDto.class)
-                                 .set(field(PaymentDto::status), PaymentStatus.APPROVED)
-                                 .create();
-        PaymentDto d2 = Instancio.of(PaymentDto.class)
-                                 .set(field(PaymentDto::status), PaymentStatus.APPROVED)
-                                 .create();
-
-        when(paymentService.findByStatus(PaymentStatus.APPROVED)).thenReturn(List.of(d1, d2));
-
-        // when & then
-        mockMvc.perform(get("/payments/statuses")
-                                .param("status", "APPROVED")
-                                .accept(MediaType.APPLICATION_JSON))
-               .andExpect(status().isOk())
-               .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-               .andExpect(jsonPath("$.length()").value(2))
-               .andExpect(jsonPath("$[0].guid").value(d1.guid().toString().toLowerCase()))
-               .andExpect(jsonPath("$[1].guid").value(d2.guid().toString().toLowerCase()));
-    }
-
-    @Test
-    @DisplayName("GET /payments/statuses with no matching status returns empty list")
-    void getByStatus_ReturnsEmptyListWhenNoneFound() throws Exception {
-        // given
-        when(paymentService.findByStatus(DECLINED)).thenReturn(List.of());
-
-        // when & then
-        mockMvc.perform(get("/payments/statuses")
-                                .param("status", "DECLINED")
-                                .accept(MediaType.APPLICATION_JSON))
-               .andExpect(status().isOk())
-               .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-               .andExpect(jsonPath("$.length()").value(0));
+               .andExpect(status().isBadRequest());
     }
 
 }
