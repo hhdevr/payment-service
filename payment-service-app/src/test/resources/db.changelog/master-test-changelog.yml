@@ -1,0 +1,24 @@
+databaseChangeLog:
+  - changeSet:
+      id: tag-0.0
+      author: Dmitry Chaykin
+      context: init
+      comment: "Tag for empty database"
+      changes:
+        - tagDatabase:
+      tag: v0.0
+
+  - include:
+      file: 20260115-1.0-create-payment.yml
+      relativeToChangelogFile: true
+
+  - changeSet:
+      id: tag-1.1
+      author: Dmitry Chaykin
+      changes:
+        - tagDatabase:
+      tag: v1.1
+
+  - include:
+      file: changelog-test-data.yml
+      relativeToChangelogFile: true
