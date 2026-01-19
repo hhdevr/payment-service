@@ -132,7 +132,7 @@ class PaymentControllerTest {
         mockMvc.perform(post("/payments")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(inputDto)))
-               .andExpect(status().isOk())
+               .andExpect(status().isCreated())
                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                .andExpect(jsonPath("$.guid").value(savedDto.guid().toString().toLowerCase()));
     }
