@@ -43,13 +43,13 @@ public class PaymentController {
     private final PaymentService service;
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('user', 'reader')")
+    @PreAuthorize("hasAnyRole('USER', 'READER')")
     public ResponseEntity<List<PaymentDto>> findAll() {
         return ok(service.findAll());
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('user', 'reader')")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<PaymentDto> getById(@PathVariable UUID id) {
         log.info("GET payment by id: {}", id);
         PaymentDto dto = service.getById(id);
@@ -58,27 +58,27 @@ public class PaymentController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('user', 'admin')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'READER')")
     public ResponseEntity<PaymentDto> create(@RequestBody PaymentDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
                              .body(service.create(dto));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<PaymentDto> update(@RequestBody PaymentDto dto) {
         return ResponseEntity.ok().body(service.update(dto));
     }
 
     @PatchMapping("/{id}")
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Boolean> update(@PathVariable UUID id, @RequestParam String note) {
         return ResponseEntity.ok().body(service.updateNote(id, note));
     }

@@ -17,8 +17,8 @@ public abstract class AbstractPostgresIntegrationTest {
 
     @Container
     protected static final PostgreSQLContainer<?> POSTGRES =
-            new PostgreSQLContainer<>("postgres:16")
-                    .withDatabaseName("payment-db")
+            new PostgreSQLContainer<>("postgres:18.1")
+                    .withDatabaseName("payment-db-test")
                     .withUsername("test")
                     .withPassword("test")
                     .waitingFor(new WaitAllStrategy().withStrategy(Wait.forListeningPort())
