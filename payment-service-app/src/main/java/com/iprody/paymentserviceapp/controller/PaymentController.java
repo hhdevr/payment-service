@@ -5,6 +5,7 @@ import com.iprody.paymentserviceapp.persistence.PaymentFilter;
 import com.iprody.paymentserviceapp.persistence.QPaymentFilter;
 import com.iprody.paymentserviceapp.service.PaymentService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -32,6 +33,7 @@ import static org.springframework.data.domain.Sort.unsorted;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.ResponseEntity.ok;
 
+@Slf4j
 @RestController
 @RequestMapping(path = "/payments",
                 produces = APPLICATION_JSON_VALUE)
@@ -49,7 +51,10 @@ public class PaymentController {
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('user', 'reader')")
     public ResponseEntity<PaymentDto> getById(@PathVariable UUID id) {
-        return ok(service.getById(id));
+        log.info("GET payment by id: {}", id);
+        PaymentDto dto = service.getById(id);
+        log.debug("Sending response PaymentDto: {}", dto);
+        return ok(dto);
     }
 
     @PostMapping
