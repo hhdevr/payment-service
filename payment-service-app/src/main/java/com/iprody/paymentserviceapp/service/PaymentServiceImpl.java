@@ -8,6 +8,7 @@ import com.iprody.paymentserviceapp.persistence.PaymentFilterFactory;
 import com.iprody.paymentserviceapp.persistence.QPaymentFilter;
 import com.iprody.paymentserviceapp.persistence.model.Payment;
 import com.iprody.paymentserviceapp.persistence.repository.PaymentRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +21,7 @@ import java.util.UUID;
 
 import static com.iprody.paymentserviceapp.exception.ErrorMessage.PAYMENT_NOT_EXIST;
 
+@Slf4j
 @Service
 public class PaymentServiceImpl implements PaymentService {
 
@@ -50,7 +52,10 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public PaymentDto getById(UUID id) {
         return converter.convert(repository.findById(id)
-                                           .orElseThrow(() -> new ServiceException(PAYMENT_NOT_EXIST, id)));
+                                           .orElseThrow(() -> {
+                                               log.error("Paymnent not found with id {}", id);
+                                               return new ServiceException(PAYMENT_NOT_EXIST, id);
+                                           }));
 
     }
 
@@ -70,6 +75,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public void delete(UUID id) {
         if (!repository.existsById(id)) {
+            log.error("Unexisted Paymnent with id {} could not be deleted", id);
             throw new ServiceException(PAYMENT_NOT_EXIST, id);
         }
         repository.deleteById(id);
@@ -78,6 +84,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public boolean updateNote(UUID id, String note) {
         if (repository.updateNote(id, note) == 0) {
+            log.error("Unexisted Paymnent with id {} could not be updated", id);
             throw new ServiceException(PAYMENT_NOT_EXIST, id);
         }
         return true;
