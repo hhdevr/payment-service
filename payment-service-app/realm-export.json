@@ -31,7 +31,7 @@
         }
       ],
       "realmRoles": [
-        "user"
+        "USER"
       ],
       "requiredActions": []
     }
@@ -39,15 +39,15 @@
   "roles": {
     "realm": [
       {
-        "name": "user",
+        "name": "USER",
         "description": "Basic user role"
       },
       {
-        "name": "reader",
+        "name": "READER",
         "description": "Reader user role"
       },
       {
-        "name": "admin",
+        "name": "ADMIN",
         "description": "Admin user role"
       }
     ]

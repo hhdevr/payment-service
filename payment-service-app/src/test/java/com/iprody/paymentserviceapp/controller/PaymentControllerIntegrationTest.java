@@ -44,16 +44,15 @@ class PaymentControllerIntegrationTest extends AbstractPostgresIntegrationTest {
     @Test
     void shouldReturnOnlyLiquibasePayments() throws Exception {
         mockMvc.perform(get("/payments")
-                                .with(TestJwtFactory.jwtWithRole("test-user", "user"))
                                 .param("page", "0")
                                 .param("size", "10")
+                                .with(TestJwtFactory.jwtWithRoles("testuser", "USER", "READER"))
                                 .accept(MediaType.APPLICATION_JSON))
                .andExpect(status().isOk())
                .andExpect(jsonPath("$", hasSize(3)))
-               .andExpect(jsonPath("$[*].guid",
-                                   containsInAnyOrder("00000000-0000-0000-0000-000000000001",
-                                                      "00000000-0000-0000-0000-000000000002",
-                                                      "00000000-0000-0000-0000-000000000003")));
+               .andExpect(jsonPath("$[*].guid", containsInAnyOrder("00000000-0000-0000-0000-000000000001",
+                                                                   "00000000-0000-0000-0000-000000000002",
+                                                                   "00000000-0000-0000-0000-000000000003")));
     }
 
     @Test
@@ -72,7 +71,7 @@ class PaymentControllerIntegrationTest extends AbstractPostgresIntegrationTest {
 
         String json = objectMapper.writeValueAsString(dto);
         String response = mockMvc.perform(post("/payments")
-                                                  .with(TestJwtFactory.jwtWithRole("test-user", "admin"))
+                                                  .with(TestJwtFactory.jwtWithRoles("testuser", "admin"))
                                                   .contentType(MediaType.APPLICATION_JSON)
                                                   .content(json))
                                  .andExpect(status().isCreated())
@@ -95,7 +94,7 @@ class PaymentControllerIntegrationTest extends AbstractPostgresIntegrationTest {
         UUID existingId =
                 UUID.fromString("00000000-0000-0000-0000-000000000002");
         mockMvc.perform(get("/payments/" + existingId)
-                                .with(TestJwtFactory.jwtWithRole("test-user", "user"))
+                                .with(TestJwtFactory.jwtWithRoles("testuser", "user"))
                                 .accept(MediaType.APPLICATION_JSON))
                .andExpect(status().isOk())
                .andExpect(jsonPath("$.guid").value(existingId.toString()))
@@ -107,7 +106,7 @@ class PaymentControllerIntegrationTest extends AbstractPostgresIntegrationTest {
     void shouldReturn404ForNonexistentPayment() throws Exception {
         UUID nonexistentId = UUID.randomUUID();
         mockMvc.perform(get("/payments/" + nonexistentId)
-                                .with(TestJwtFactory.jwtWithRole("test-user", "user"))
+                                .with(TestJwtFactory.jwtWithRoles("testuser", "user"))
                                 .accept(MediaType.APPLICATION_JSON))
                .andExpect(status().isNotFound())
                .andExpect(content().contentType(MediaType.APPLICATION_JSON))

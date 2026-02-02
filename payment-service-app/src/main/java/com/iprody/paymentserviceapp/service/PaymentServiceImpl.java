@@ -1,12 +1,16 @@
 package com.iprody.paymentserviceapp.service;
 
+import com.iprody.paymentserviceapp.async.AsyncSender;
+import com.iprody.paymentserviceapp.async.XPaymentAdapterRequestMessage;
 import com.iprody.paymentserviceapp.controller.model.PaymentDto;
 import com.iprody.paymentserviceapp.converter.PaymentConverter;
+import com.iprody.paymentserviceapp.converter.XPaymentAdapterMapper;
 import com.iprody.paymentserviceapp.exception.ServiceException;
 import com.iprody.paymentserviceapp.persistence.PaymentFilter;
 import com.iprody.paymentserviceapp.persistence.PaymentFilterFactory;
 import com.iprody.paymentserviceapp.persistence.QPaymentFilter;
 import com.iprody.paymentserviceapp.persistence.model.Payment;
+import com.iprody.paymentserviceapp.persistence.model.PaymentStatus;
 import com.iprody.paymentserviceapp.persistence.repository.PaymentRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -27,12 +32,18 @@ public class PaymentServiceImpl implements PaymentService {
 
     private final PaymentRepository repository;
     private final PaymentConverter converter;
+    private final XPaymentAdapterMapper xPaymentAdapterMapper;
+    private final AsyncSender<XPaymentAdapterRequestMessage> sender;
 
     @Autowired
     public PaymentServiceImpl(PaymentRepository repository,
-                              PaymentConverter converter) {
+                              PaymentConverter converter,
+                              XPaymentAdapterMapper xPaymentAdapterMapper,
+                              AsyncSender<XPaymentAdapterRequestMessage> sender) {
         this.repository = repository;
         this.converter = converter;
+        this.xPaymentAdapterMapper = xPaymentAdapterMapper;
+        this.sender = sender;
     }
 
     @Override
@@ -61,7 +72,14 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public PaymentDto create(PaymentDto dto) {
-        return converter.convert(repository.save(converter.convert(dto)));
+        Payment entity = converter.convert(dto);
+        Payment saved = repository.save(entity);
+        PaymentDto resultDto = converter.convert(saved);
+
+        XPaymentAdapterRequestMessage requestMessage = xPaymentAdapterMapper.toXPaymentAdapterRequestMessage(entity);
+        sender.send(requestMessage);
+
+        return resultDto;
     }
 
     @Override
@@ -88,6 +106,15 @@ public class PaymentServiceImpl implements PaymentService {
             throw new ServiceException(PAYMENT_NOT_EXIST, id);
         }
         return true;
+    }
+
+    @Override
+    public PaymentDto updateStatus(UUID id, PaymentStatus status) {
+        Payment payment = repository.findById(id)
+                                    .orElseThrow(() -> new ServiceException(PAYMENT_NOT_EXIST, id));
+        payment.setStatus(status);
+        payment.setUpdatedAt(OffsetDateTime.now());
+        return converter.convert(repository.save(payment));
     }
 
     public List<PaymentDto> search(PaymentFilter filter) {

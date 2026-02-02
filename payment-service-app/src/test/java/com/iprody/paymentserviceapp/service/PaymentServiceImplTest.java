@@ -1,8 +1,11 @@
 package com.iprody.paymentserviceapp.service;
 
+import com.iprody.paymentserviceapp.async.AsyncSender;
+import com.iprody.paymentserviceapp.async.XPaymentAdapterRequestMessage;
 import com.iprody.paymentserviceapp.controller.model.PaymentDto;
 import com.iprody.paymentserviceapp.converter.PaymentConverter;
 import com.iprody.paymentserviceapp.converter.PaymentConverterImpl;
+import com.iprody.paymentserviceapp.converter.XPaymentAdapterMapper;
 import com.iprody.paymentserviceapp.exception.ServiceException;
 import com.iprody.paymentserviceapp.persistence.model.Payment;
 import com.iprody.paymentserviceapp.persistence.repository.PaymentRepository;
@@ -36,10 +39,19 @@ class PaymentServiceImplTest {
 
     private PaymentService paymentService;
 
+    @Mock
+    private XPaymentAdapterMapper xPaymentAdapterMapper;
+
+    @Mock
+    private AsyncSender<XPaymentAdapterRequestMessage> sender;
+
     @BeforeEach
     void setUp() {
         PaymentConverter paymentConverter = new PaymentConverterImpl();
-        paymentService = new PaymentServiceImpl(paymentRepository, paymentConverter);
+        paymentService = new PaymentServiceImpl(paymentRepository,
+                                                paymentConverter,
+                                                xPaymentAdapterMapper,
+                                                sender);
     }
 
     @Test
