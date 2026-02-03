@@ -29,6 +29,36 @@ spring:
         jwt:
           issuer-uri: http://keycloak:8080/realms/iprody-lms
 
+  kafka:
+    bootstrap-servers: kafka:9092
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JacksonJsonSerializer
+
+    consumer:
+      group-id: xpayment-adapter-result-consumers
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JacksonJsonDeserializer
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+
+      properties:
+        spring.json.use.type.headers: false
+        spring.json.trusted.packages: "*"
+        spring.json.value.default.type: com.iprody.paymentserviceapp.async.XPaymentAdapterResponseMessage
+
+    listener:
+      ack-mode: manual
+      concurrency: 1
+
+app:
+  kafka:
+    topics:
+      xpayment-adapter:
+        request-topic: xpayment-adapter.requests-topic
+        response-topic: xpayment-adapter.response-topic
+
 logging:
   level:
     liquibase: DEBUG

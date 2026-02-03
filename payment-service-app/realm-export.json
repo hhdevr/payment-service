@@ -1,6 +1,7 @@
 {
   "realm": "iprody-lms",
   "enabled": true,
+  "sslRequired": "none",
   "clients": [
     {
       "clientId": "basic_client",

@@ -2,6 +2,8 @@ package com.iprody.paymentserviceapp.controller;
 
 import com.iprody.paymentserviceapp.AbstractPostgresIntegrationTest;
 import com.iprody.paymentserviceapp.TestJwtFactory;
+import com.iprody.paymentserviceapp.async.AsyncSender;
+import com.iprody.paymentserviceapp.async.XPaymentAdapterRequestMessage;
 import com.iprody.paymentserviceapp.controller.model.PaymentDto;
 import com.iprody.paymentserviceapp.persistence.model.Payment;
 import com.iprody.paymentserviceapp.persistence.model.PaymentStatus;
@@ -12,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import tools.jackson.databind.ObjectMapper;
 
@@ -40,6 +43,9 @@ class PaymentControllerIntegrationTest extends AbstractPostgresIntegrationTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @MockitoBean
+    private AsyncSender<XPaymentAdapterRequestMessage> xPaymentAdapterMessageProducer;
 
     @Test
     void shouldReturnOnlyLiquibasePayments() throws Exception {
@@ -71,7 +77,7 @@ class PaymentControllerIntegrationTest extends AbstractPostgresIntegrationTest {
 
         String json = objectMapper.writeValueAsString(dto);
         String response = mockMvc.perform(post("/payments")
-                                                  .with(TestJwtFactory.jwtWithRoles("testuser", "admin"))
+                                                  .with(TestJwtFactory.jwtWithRoles("testuser", "USER"))
                                                   .contentType(MediaType.APPLICATION_JSON)
                                                   .content(json))
                                  .andExpect(status().isCreated())
@@ -82,8 +88,7 @@ class PaymentControllerIntegrationTest extends AbstractPostgresIntegrationTest {
                                  .getResponse()
                                  .getContentAsString();
         PaymentDto created = objectMapper.readValue(response, PaymentDto.class);
-        Optional<Payment> saved =
-                paymentRepository.findById(created.guid());
+        Optional<Payment> saved = paymentRepository.findById(created.guid());
         assertThat(saved).isPresent();
         assertThat(saved.get().getCurrency()).isEqualTo("EUR");
         assertThat(saved.get().getAmount()).isEqualByComparingTo("123.45");
@@ -94,7 +99,7 @@ class PaymentControllerIntegrationTest extends AbstractPostgresIntegrationTest {
         UUID existingId =
                 UUID.fromString("00000000-0000-0000-0000-000000000002");
         mockMvc.perform(get("/payments/" + existingId)
-                                .with(TestJwtFactory.jwtWithRoles("testuser", "user"))
+                                .with(TestJwtFactory.jwtWithRoles("testuser", "USER"))
                                 .accept(MediaType.APPLICATION_JSON))
                .andExpect(status().isOk())
                .andExpect(jsonPath("$.guid").value(existingId.toString()))
@@ -106,7 +111,7 @@ class PaymentControllerIntegrationTest extends AbstractPostgresIntegrationTest {
     void shouldReturn404ForNonexistentPayment() throws Exception {
         UUID nonexistentId = UUID.randomUUID();
         mockMvc.perform(get("/payments/" + nonexistentId)
-                                .with(TestJwtFactory.jwtWithRoles("testuser", "user"))
+                                .with(TestJwtFactory.jwtWithRoles("testuser", "USER"))
                                 .accept(MediaType.APPLICATION_JSON))
                .andExpect(status().isNotFound())
                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
