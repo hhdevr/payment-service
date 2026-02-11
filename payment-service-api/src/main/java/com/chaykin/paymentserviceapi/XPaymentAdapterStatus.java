@@ -1,4 +1,4 @@
-package com.iprody.paymentserviceapp.async;
+package com.chaykin.paymentserviceapi;
 
 /**
  * Статусы в которых может пребывать платежная транзакция X Payment

@@ -1,9 +1,9 @@
 package com.iprody.paymentserviceapp.controller;
 
+import com.chaykin.paymentserviceapi.AsyncSender;
+import com.chaykin.paymentserviceapi.model.XPaymentAdapterRequestMessage;
 import com.iprody.paymentserviceapp.AbstractPostgresIntegrationTest;
 import com.iprody.paymentserviceapp.TestJwtFactory;
-import com.iprody.paymentserviceapp.async.AsyncSender;
-import com.iprody.paymentserviceapp.async.XPaymentAdapterRequestMessage;
 import com.iprody.paymentserviceapp.controller.model.PaymentDto;
 import com.iprody.paymentserviceapp.persistence.model.Payment;
 import com.iprody.paymentserviceapp.persistence.model.PaymentStatus;

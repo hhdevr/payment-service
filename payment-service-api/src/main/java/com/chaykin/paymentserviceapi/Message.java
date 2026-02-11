@@ -1,4 +1,4 @@
-package com.iprody.paymentserviceapp.async;
+package com.chaykin.paymentserviceapi;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;

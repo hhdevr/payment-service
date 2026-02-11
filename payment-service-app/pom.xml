@@ -5,23 +5,19 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.0.0</version>
-        <relativePath /> <!-- lookup parent from repository -->
+        <groupId>com.chaykin</groupId>
+        <artifactId>payment-service</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>com.iprody</groupId>
     <artifactId>payment-service-app</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>payment-service-app</name>
     <description>Payment service web application</description>
 
     <properties>
-        <java.version>21</java.version>
         <instancio.version>5.5.1</instancio.version>
-        <checkstyle-puppycrawl.version>12.1.2</checkstyle-puppycrawl.version>
-        <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
         <querydsl.version>5.1.0</querydsl.version>
         <apt-maven-plugin.version>1.1.3</apt-maven-plugin.version>
         <mapstruct.version>1.6.3</mapstruct.version>
@@ -109,6 +105,13 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>com.chaykin</groupId>
+            <artifactId>payment-service-api</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
 
         <dependency>
@@ -210,35 +213,6 @@
                             <outputDirectory>target/generated-sources/querydsl</outputDirectory>
                             <processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor>
                         </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>${maven-checkstyle-plugin.version}</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.puppycrawl.tools</groupId>
-                        <artifactId>checkstyle</artifactId>
-                        <version>${checkstyle-puppycrawl.version}</version>
-                    </dependency>
-                </dependencies>
-                <configuration>
-                    <configLocation>google_checks.xml</configLocation>
-                    <consoleOutput>true</consoleOutput>
-                    <linkXRef>true</linkXRef>
-                    <failsOnError>true</failsOnError>
-                    <violationSeverity>warning</violationSeverity>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>check-style</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
                     </execution>
                 </executions>
             </plugin>

@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: x-payment-adapter-app
+
+  kafka:
+    bootstrap-servers: localhost:9093
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JacksonJsonSerializer
+
+    consumer:
+      group-id: xpayment-adapter-result-consumers
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JacksonJsonDeserializer
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      properties:
+        spring.json.use.type.headers: false
+        spring.json.trusted.packages: "*"
+        #        spring.json.value.default.type: "com.iprody.xpayment.adapter.app.async.XPaymentAdapterRequestMessage"
+        spring.json.value.default.type: com.chaykin.paymentserviceapi.model.XPaymentAdapterResponseMessage
+
+    listener:
+      ack-mode: manual
+      concurrency: 1
+
+app:
+  kafka:
+    topics:
+      x-payment-adapter:
+        request-topic: xpayment-adapter.requests-topic
+        response-topic: xpayment-adapter.response-topic

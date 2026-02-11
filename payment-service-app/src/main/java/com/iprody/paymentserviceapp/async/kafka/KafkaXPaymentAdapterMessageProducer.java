@@ -1,7 +1,7 @@
 package com.iprody.paymentserviceapp.async.kafka;
 
-import com.iprody.paymentserviceapp.async.AsyncSender;
-import com.iprody.paymentserviceapp.async.XPaymentAdapterRequestMessage;
+import com.chaykin.paymentserviceapi.AsyncSender;
+import com.chaykin.paymentserviceapi.model.XPaymentAdapterRequestMessage;
 import com.iprody.paymentserviceapp.config.kafka.KafkaProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 public class KafkaXPaymentAdapterMessageProducer implements AsyncSender<XPaymentAdapterRequestMessage> {
 
     private final KafkaProperties kafkaProperties;
+
     private final KafkaTemplate<String, XPaymentAdapterRequestMessage> template;
 
     @Override
@@ -24,7 +25,6 @@ public class KafkaXPaymentAdapterMessageProducer implements AsyncSender<XPayment
                  msg.getAmount(),
                  msg.getCurrency(),
                  kafkaProperties.getRequestTopic());
-
         template.send(kafkaProperties.getRequestTopic(), key, msg);
     }
 }
