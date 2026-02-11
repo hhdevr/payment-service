@@ -1,7 +1,7 @@
 package com.iprody.paymentserviceapp.service;
 
-import com.iprody.paymentserviceapp.async.AsyncSender;
-import com.iprody.paymentserviceapp.async.XPaymentAdapterRequestMessage;
+import com.chaykin.paymentserviceapi.AsyncSender;
+import com.chaykin.paymentserviceapi.model.XPaymentAdapterRequestMessage;
 import com.iprody.paymentserviceapp.controller.model.PaymentDto;
 import com.iprody.paymentserviceapp.converter.PaymentConverter;
 import com.iprody.paymentserviceapp.converter.XPaymentAdapterMapper;

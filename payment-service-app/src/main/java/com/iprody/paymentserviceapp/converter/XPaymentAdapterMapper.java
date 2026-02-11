@@ -1,6 +1,6 @@
 package com.iprody.paymentserviceapp.converter;
 
-import com.iprody.paymentserviceapp.async.XPaymentAdapterRequestMessage;
+import com.chaykin.paymentserviceapi.model.XPaymentAdapterRequestMessage;
 import com.iprody.paymentserviceapp.persistence.model.Payment;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

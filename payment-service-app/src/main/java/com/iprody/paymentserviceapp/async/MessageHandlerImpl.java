@@ -1,5 +1,8 @@
 package com.iprody.paymentserviceapp.async;
 
+import com.chaykin.paymentserviceapi.MessageHandler;
+import com.chaykin.paymentserviceapi.XPaymentAdapterStatus;
+import com.chaykin.paymentserviceapi.model.XPaymentAdapterResponseMessage;
 import com.iprody.paymentserviceapp.exception.ServiceException;
 import com.iprody.paymentserviceapp.persistence.model.PaymentStatus;
 import com.iprody.paymentserviceapp.service.PaymentService;

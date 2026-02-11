@@ -1,7 +1,6 @@
-package com.iprody.paymentserviceapp.async;
+package com.chaykin.paymentserviceapi.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.chaykin.paymentserviceapi.Message;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -18,8 +17,6 @@ import java.util.UUID;
  * идентификатор сообщения
  * и метку времени его возникновения.
  */
-@Getter
-@Setter
 public class XPaymentAdapterRequestMessage implements Message {
 
     /**
@@ -44,4 +41,36 @@ public class XPaymentAdapterRequestMessage implements Message {
         return paymentGuid;
     }
 
+    public UUID getPaymentGuid() {
+        return paymentGuid;
+    }
+
+    public void setPaymentGuid(UUID paymentGuid) {
+        this.paymentGuid = paymentGuid;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
+    @Override
+    public OffsetDateTime getOccurredAt() {
+        return occurredAt;
+    }
+
+    public void setOccurredAt(OffsetDateTime occurredAt) {
+        this.occurredAt = occurredAt;
+    }
 }

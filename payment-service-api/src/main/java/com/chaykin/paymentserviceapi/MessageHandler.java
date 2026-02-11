@@ -1,4 +1,4 @@
-package com.iprody.paymentserviceapp.async;
+package com.chaykin.paymentserviceapi;
 
 public interface MessageHandler<T extends Message> {
 

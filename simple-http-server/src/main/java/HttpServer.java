@@ -43,7 +43,8 @@ public class HttpServer {
              BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
              OutputStream outputStream = clientSocket.getOutputStream()) {
 
-            while (!in.ready());
+            while (!in.ready()){
+            };
 
             String requestLine = in.readLine();
             if (requestLine == null || requestLine.isEmpty()) {
@@ -101,7 +102,6 @@ public class HttpServer {
                              notFoundMessage.getBytes());
                 System.out.println("File not found: " + filePath);
             }
-
         } catch (IOException e) {
             System.err.println("Error handling client: " + e.getMessage());
         } finally {
